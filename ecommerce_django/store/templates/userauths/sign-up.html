@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4 shadow-lg rounded">
+                <h2 class="text-center mb-3">Sign Up <i class="fa fa-user-plus"></i></h2>
+                <p class="text-center text-muted">Welcome! Create your free account and add your address.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <!-- User Details -->
+                    <h5>Account Details</h5>
+                    <div class="mb-2">{{ form.full_name.label_tag }} {{ form.full_name }}</div>
+                    <div class="mb-2">{{ form.email.label_tag }} {{ form.email }}</div>
+                    <div class="mb-2">{{ form.mobile.label_tag }} {{ form.mobile }}</div>
+                    <div class="mb-2">{{ form.password1.label_tag }} {{ form.password1 }}</div>
+                    <div class="mb-2">{{ form.password2.label_tag }} {{ form.password2 }}</div>
+                    <div class="mb-2">{{ form.user_type.label_tag }} {{ form.user_type }}</div>
+
+                    <hr>
+
+                    <!-- Shipping Address -->
+                    <h5>Shipping Address</h5>
+                    <div class="mb-2">{{ address_form.full_name.label_tag }} {{ address_form.full_name }}</div>
+                    <div class="mb-2">{{ address_form.email.label_tag }} {{ address_form.email }}</div>
+                    <div class="mb-2">{{ address_form.phone.label_tag }} {{ address_form.phone }}</div>
+                    <div class="mb-2">{{ address_form.address_line1.label_tag }} {{ address_form.address_line1 }}</div>
+                    <div class="mb-2">{{ address_form.address_line2.label_tag }} {{ address_form.address_line2 }}</div>
+                    <div class="mb-2">{{ address_form.city.label_tag }} {{ address_form.city }}</div>
+                    <div class="mb-2">{{ address_form.state.label_tag }} {{ address_form.state }}</div>
+                    <div class="mb-2">{{ address_form.zip_code.label_tag }} {{ address_form.zip_code }}</div>
+                    <div class="mb-2">{{ address_form.country.label_tag }} {{ address_form.country }}</div>
+
+                    
+
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

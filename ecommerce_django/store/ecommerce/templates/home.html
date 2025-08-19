@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+
+
+
+{% block css %}
+<style>
+    .hero-section {
+            background-color: #fff;
+            padding: 60px 0;
+        }
+        .hero-section h1 {
+            font-weight: 800;
+            font-size: 3rem;
+        }
+        .hero-section .highlight {
+            color: #6f42c1; /* Purple for Best Prices */
+        }
+        .hero-section p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .search-bar {
+            max-width: 500px;
+            margin-top: 20px;
+        }
+         .product-img {
+        height: 250px; /* Sab images ki height fix */
+        width: 100%; /* Card ke width ke equal */
+        object-fit: cover; /* Crop karke fit karega, stretch nahi karega */
+        }  
+
+
+
+
+
+
+
+
+
+
+
+        /* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 120px 0 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 500px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.cta-btn {
+    background: #e74c3c;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cta-btn:hover {
+    background: #c0392b;
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-placeholder {
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.hero-icon {
+    font-size: 6rem;
+    opacity: 0.7;
+}
+
+/* Section Titles */
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #333;
+}
+
+/* Categories Section */
+.categories {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.category-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+}
+
+.category-icon {
+    width: 80px;
+    height: 80px;
+    background: #e74c3c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.category-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.category-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.category-card p {
+    color: #666;
+}
+
+
+    </style> 
+    {% endblock %} 
+</head>
+<body>
+
+  
+    <title>
+        {% block title%}
+        Ecommerce Home
+        {% endblock  %}
+    </title>
+
+    
+    {% block content %}
+{% comment %} <!-- Hero Section -->
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Left Side -->
+            <div class="col-md-6">
+                <p class="text-muted mb-1">20% OFF Today Only! 🎁</p>
+                <h1>
+                    Everything Tech,<br>
+                    <span class="text-primary fw-bold">Best Prices</span><br>
+                    & Free Delivery
+                </h1>
+                <p>
+                    Welcome to FastCart, shop faster, easier, securely, with good deals, customer support,
+                    fast refunds and many more amazing features that await you!
+                </p>
+                <div class="input-group mt-3 mb-2">
+                    <input type="text" class="form-control" placeholder="Search Item">
+                    <button class="btn btn-primary">🔍</button>
+                </div>
+                <small class="text-muted">
+                    Free Delivery Today Only! <a href="#">Terms & Conditions</a> Apply
+                </small>
+            </div>
+            <!-- Right Side -->
+             
+            
+        </div>
+    </div>
+</section> {% endcomment %}
+
+<!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to ShopEase</h1>
+            <p>Discover amazing products at unbeatable prices</p>
+            <a class="cta-btn" href="{% url 'shop' %}">Shop Now</a>
+        </div>
+        <div class="hero-image">
+            <div class="hero-placeholder">
+                <i class="fas fa-shopping-bag hero-icon"></i>   
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Fashion</h3>
+                    <p>Trendy clothes & accessories</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Electronics</h3>
+                    <p>Latest gadgets & devices</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Home & Garden</h3>
+                    <p>Furniture & home decor</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>Sports</h3>
+                    <p>Fitness & outdoor gear</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+<!-- New Arrivals Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">🆕 New Arrivals</h2>
+            <p class="text-muted">Explore the latest products in our store</p>
+        </div>
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-12 col-sm-6 col-lg-4">
+                <a href="{% url 'product_detail' product.slug %}">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top product-img" alt="{{ product.name }}">
+                            {% endif %}
+                            <button class="btn btn-light position-absolute top-0 end-0 m-2">❤️</button>
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ product.name }}</h5>
+
+                            <!-- Ratings -->
+                            <div class="mb-2">
+                                {% with avg=product.average_rating %}
+                                    {% if avg %}
+                                        <div class="text-warning">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= avg %}
+                                                    ★
+                                                {% else %}
+                                                    ☆
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="text-muted">({{ avg|floatformat:1 }})</small>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted">No ratings yet</div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mb-2">
+                                <span class="fw-bold text-primary">${{ product.prize }}</span>
+                                {% if product.regular_price and product.regular_price > product.prize %}
+                                    <span class="text-muted text-decoration-line-through ms-2">
+                                        ${{ product.regular_price }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'product_detail' product.slug %}" class="btn btn-primary mt-auto">
+                                🛒 More About Product
+                            </a>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">No products available right now.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+{%endblock%}
+
+
+

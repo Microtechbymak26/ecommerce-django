@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{%block css %}
+<style>
+.thumb-box {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mainProductImage {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+.mainProductImage {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    background-color: #fff; /* optional padding effect */
+    display: block;
+}
+
+.thumb-box {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+}
+
+.thumb-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;  /* contain to keep same aspect */
+}
+
+</style>
+ {% endblock %} 
+
+
+
+
+
+{% block content %}
+
+<div class="container my-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/shop/">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Product Main Section -->
+    <div class="row g-5">
+        <!-- Left: Images -->
+        <div class="col-lg-6">
+            <!-- Main Product Image -->
+            <div class="mb-4">
+              
+
+                     <img id="mainProductImage"
+     src="{{ product.image.url }}"
+     class="img-fluid rounded shadow-sm mainProductImage"
+     alt="{{ product.name }}">
+
+            </div>
+
+            <!-- Thumbnail Gallery -->
+            <div class="d-flex flex-wrap gap-2">
+                <!-- Main image thumbnail -->
+                <div class="thumb-box">
+                    <img src="{{ product.image.url }}" class="gallery-thumb" alt="{{ product.name }}">
+                </div>
+
+                <!-- Additional gallery images -->
+                {% for image in product.gallery.all %}
+                <div class="thumb-box">
+                    <img src="{{ image.image.url }}" class="gallery-thumb" alt="Gallery image {{ forloop.counter }}">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="col-lg-6">
+            <h2 class="fw-bold">{{ product.name }}</h2>
+
+            <!-- Rating & Reviews -->
+            <div class="mb-2">
+                {% with avg=product.average_rating %}
+                    {% if avg %}
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= avg %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                            <small class="text-muted">({{ avg|floatformat:1 }})</small>
+                        </div>
+                    {% else %}
+                        <div class="text-muted">No ratings yet</div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Price & Stock -->
+            <div class="mb-2">
+                <span class="fw-bold text-primary">${{ product.prize }}</span>
+                {% if product.regular_price and product.regular_price > product.prize %}
+                    <span class="text-muted text-decoration-line-through ms-2">${{ product.regular_price }}</span>
+                {% endif %}
+                {% if product.stock > 0 %}
+                    <span class="badge bg-success ms-2">In Stock</span>
+                {% else %}
+                    <span class="badge bg-danger ms-2">Out of Stock</span>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+         
+            <p>Description: See the Description Below</p>
+             
+            <!-- Variants -->
+            {% for variant in product.variants.all %}
+            <div class="mb-3">
+                <h6>{{ variant.name }}:</h6>
+                {% for item in variant.variant_items.all %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" 
+                           name="{{ variant.name|lower }}" 
+                           value="{{ item.title }}">
+                    <label class="form-check-label">{{ item.title }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <!-- Quantity -->
+            <div class="mb-3">
+                <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
+                <select id="quantity" name="quantity" class="form-select" style="max-width:150px;">
+                    {% for qty in product_stock_range %}
+                        <option class="stock-{{ qty }}" value="{{ qty }}">{{ qty }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Add to Cart -->
+            <div class="d-flex align-items-center mb-4">
+                <button id="addToCartBtn" class="btn btn-primary me-2">Add to Cart</button>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="mb-3">
+                <h6>Share:</h6>
+                <div class="d-flex gap-2">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary">
+                        <i class="fab fa-linkedin-in"></i> LinkedIn
+                    </a>
+                    <a href="https://wa.me/?text={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-success">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="https://pinterest.com/pin/create/button/?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-danger">
+                        <i class="fab fa-pinterest"></i> Pinterest
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Section -->
+    <ul class="nav nav-tabs mt-5" id="productTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">Description</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Additional Information</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews</button>
+        </li>
+    </ul>
+
+    <div class="tab-content p-3 border border-top-0" id="productTabContent">
+        <div class="tab-pane fade show active" id="desc" role="tabpanel">
+            <p>{{ product.description|safe|truncatechars:15000000000000 }}</p>
+        </div>
+        <div class="tab-pane fade" id="info" role="tabpanel">
+            <ul class="list-group">
+                {% for variant in product.variants.all %}
+                <li class="list-group-item">
+                    <strong>{{ variant.name }}:</strong>
+                    {% if variant.variant_items.count > 0 %}
+                        {% for item in variant.variant_items.all %}
+                            {{ item.title }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <em>No items</em>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+            {% for review in product.reviews.all %}
+            <div class="border-bottom pb-2 mb-2">
+                <strong>{{ review.user.username }}</strong> - {{ review.rating }} Stars 
+                <small class="text-muted">({{ review.created_at|date:"M d, Y H:i" }})</small>
+                <p>{{ review.comment }}</p>
+            </div>
+            {% empty %}
+                <p>No reviews yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <h3 class="mt-5">Related Products</h3>
+    <div class="row">
+        {% for related in related_products %}
+        <div class="col-12 col-sm-6 col-lg-3 mb-4">
+            <a href="{% url 'product_detail' related.slug %}" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm">
+                    <div class="position-relative">
+                        {% if related.image %}
+                            <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.name }}">
+                        {% endif %}
+                        <button class="btn btn-light position-absolute top-0 end-0 m-2">❤️</button>
+                    </div>
+                    <div class="card-body">
+                        <span class="badge bg-success mb-2">HOT</span>
+                        <p class="text-muted small mb-1">{{ related.category.name }}</p>
+                        <h6 class="fw-bold">{{ related.name }}</h6>
+                        <div class="mb-2">
+                            <span class="fw-bold text-primary">${{ related.prize }}</span>
+                            {% if related.regular_price and related.regular_price > related.prize %}
+                                <span class="text-muted text-decoration-line-through ms-2">${{ related.regular_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const mainImage = document.getElementById("mainProductImage");
+    const thumbnails = document.querySelectorAll(".gallery-thumb");
+
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener("click", function() {
+            mainImage.src = this.src;
+        });
+    });
+
+    document.getElementById("addToCartBtn").addEventListener("click", function () {
+        let variants = {};
+        document.querySelectorAll(".form-check-input:checked").forEach(input => {
+            variants[input.name] = input.value;
+        });
+
+        let selectedQty = document.getElementById("quantity").value;
+
+        let data = {
+            id: "{{ product.id }}",
+            qty: selectedQty,
+            cart_id: localStorage.getItem("cart_id") || Date.now(),
+            variants: JSON.stringify(variants)
+        };
+
+        localStorage.setItem("cart_id", data.cart_id);
+
+        fetch("{% url 'add_to_cart' %}?" + new URLSearchParams(data), { method: "GET" })
+        .then(res => res.json())
+        .then(response => {
+            if (response.status === "success") {
+                alert("✅ " + response.message);
+            } else {
+                alert("❌ " + response.message);
+            }
+        })
+        .catch(err => console.error("Error:", err));
+    });
+});
+</script>
+
+{% endblock %}

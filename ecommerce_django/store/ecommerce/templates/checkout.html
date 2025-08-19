@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+
+        
+
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <h4>Checkouts</h4>
+            {% for item in order.orderitem_set.all %}
+            <div class="card mb-3 p-3">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="{{ item.product.image.url }}" class="img-fluid" alt="{{ item.product.name }}">
+                    </div>
+                    <div class="col-md-6">
+                        <h5>{{ item.product.name }}</h5>
+                        <p>Price: ${{ item.product.prize }}</p>
+                        <p>Vendor: {{ item.product.vendor.username }}</p>
+                    </div>
+                    <div class="col-md-2 text-center">
+                       <p>Qty: {{ item.qty }}</p>
+
+                    </div>
+                            <div class="col-md-2 text-center">
+                            <p>${{ item.total }}</p>
+                        </div>
+                        <div class="col-md-12 mt-2">
+                            <a href="{% url 'cart' %}" class="btn btn-primary w-100">
+                                <i class="bi bi-cart-fill"></i> Back to Cart
+                            </a>
+                        </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+       <h4>Billing Info</h4>
+<div class="card p-4 mb-4">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="full_name" class="form-label"><strong>Full Name</strong></label>
+            <input type="text" id="full_name" class="form-control" name="full_name" value="{{ order.address.full_name }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="email" class="form-label"><strong>Email</strong></label>
+            <input type="email" id="email" class="form-control" name="email" value="{{ order.address.email }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="phone" class="form-label"><strong>Phone</strong></label>
+            <input type="text" id="phone" class="form-control" name="phone" value="{{ order.address.phone }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="address_line1" class="form-label"><strong>Address Line 1</strong></label>
+            <input type="text" id="address_line1" class="form-control" name="address_line1" value="{{ order.address.address_line1 }}">
+        </div>
+        
+        <div class="mb-3">
+            <label for="address_line2" class="form-label"><strong>Address Line 2</strong></label>
+            <input type="text" id="address_line2" class="form-control" name="address_line2" value="{{ order.address.address_line2 }}">
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="city" class="form-label"><strong>City</strong></label>
+                <input type="text" id="city" class="form-control" name="city" value="{{ order.address.city }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="state" class="form-label"><strong>State</strong></label>
+                <input type="text" id="state" class="form-control" name="state" value="{{ order.address.state }}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="zip_code" class="form-label"><strong>Zip Code</strong></label>
+                <input type="text" id="zip_code" class="form-control" name="zip_code" value="{{ order.address.zip_code }}">
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="country" class="form-label"><strong>Country</strong></label>
+            <input type="text" id="country" class="form-control" name="country" value="{{ order.address.country }}">
+        </div>
+        <a href="{%url 'cart' %}" class="btn btn-primary w-100">
+         Change Shipping Address
+        </a>
+    </form>
+</div>
+
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card p-3">
+                <h4>Order Summary</h4>
+                <p>Sub-total: ${{ order.sub_total }}</p>
+                <p>Shipping: ${{ order.shipping }}</p>
+                <p>Tax: ${{ order.tax }}</p>
+                <h5>Total: ${{ order.total }}</h5>
+
+                <div class="mt-3">
+                    <button class="btn btn-purple w-100 mb-2">Pay with Stripe</button>
+                    <button class="btn btn-warning w-100 mb-2">PayPal</button>
+                    <button class="btn btn-dark w-100">Debit or Credit Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
