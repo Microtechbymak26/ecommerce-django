@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import OrderItem, Product,Cart, Order , Category
+from .models import OrderItem, Product,Cart, Order , Category, Review
 from customer.models import Address
 from django.http import JsonResponse 
 from django.db.models import Q , Sum 
@@ -11,6 +11,23 @@ from django.contrib.auth.decorators import login_required
 import json
 
 # Create your views here.
+
+
+@login_required
+def add_review(request, product_id):
+    if request.method == "POST":
+        product = get_object_or_404(Product, id=product_id)
+        rating = request.POST.get("rating")
+        comment = request.POST.get("comment")
+
+        Review.objects.create(
+            user=request.user,
+            product=product,
+            rating=rating,
+            comment=comment
+        )
+        messages.success(request, "✅ Your review has been submitted.")
+        return redirect("product_detail", slug=product.slug)
 
 def shop(request):
     products = Product.objects.all()
@@ -145,60 +162,64 @@ def add_to_cart(request):
     })
 
 
-
 def cart(request):
-    # yaha condition ulta thi — "not in" ke badle "in" check karna tha
-    if "cart_id" in request.session:  # CHANGE: condition fixed
-        cart_id = request.session["cart_id"]
-    else:
-        cart_id = None
-    
-    items = Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id))
-    # CHANGE: yaha 'cart_sub_total' ki jagah 'sub_total' key access kiya
-    cart_sub_total = Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id)) \
-        .aggregate(sub_total=Sum('sub_total'))['sub_total']
+    cart_id = request.session.get("cart_id", None)
+
+    items = Cart.objects.filter(
+        Q(cart_id=cart_id) | Q(user=request.user) if request.user.is_authenticated else Q(cart_id=cart_id)
+    )
+
+    # subtotal
+    cart_sub_total = items.aggregate(sub_total=Sum('sub_total'))['sub_total'] or Decimal("0.00")
+    # shipping total
+    cart_shipping_total = items.aggregate(shipping=Sum('shipping'))['shipping'] or Decimal("0.00")
+    # grand total
+    cart_total = cart_sub_total + cart_shipping_total
 
     try:
         addresses = Address.objects.filter(user=request.user)
     except:
         addresses = None
 
-    # CHANGE: 'if not items' ko 'if not items.exists()' kiya taaki queryset empty hone par kaam kare
     if not items.exists():
-        messages.warning(request, "Your cart is empty.")  # CHANGE: pehle request="..." galat tha
+        messages.warning(request, "Your cart is empty.")
         return redirect('home')
-    
+
     context = {
-        'items': items, 
+        'items': items,
         'cart_sub_total': cart_sub_total,
+        'cart_shipping_total': cart_shipping_total,
+        'cart_total': cart_total,
         'addresses': addresses,
-        
     }
 
-    return render(request, 'cart.html', context=context)
+    return render(request, 'cart.html', context)
 
 
+@login_required
 def delete_cart_item(request):
-    id = request.GET.get('id')
-    cart_id = request.GET.get('cart_id')
     item_id = request.GET.get('item_id')
-    
-    if not id or not cart_id or not item_id:
-        return JsonResponse({'status': 'error', 'message': 'Items not found.'})
-    
-    try:
-        product = Product.objects.get(id=id, status__iexact='Published')
-    except Product.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Product not found.'})   
-    
-    item = Cart.objects.filter(id=item_id, cart_id=cart_id)
-    item.delete()
+    product_id = request.GET.get('id')
 
-    total_cart_items = Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user))
-    
-    # CHANGE: yaha bhi 'cart_sub_total' ki jagah 'sub_total' key access kiya
-    cart_sub_total = Cart.objects.filter(Q(cart_id=cart_id) | Q(user=request.user)) \
-        .aggregate(sub_total=Sum('sub_total'))['sub_total']
+    if not item_id or not product_id:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request.'})
+
+    # ✅ check product
+    try:
+        product = Product.objects.get(id=product_id, status__iexact='Published')
+    except Product.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Product not found.'})
+
+    # ✅ delete only if item belongs to logged-in user
+    try:
+        item = Cart.objects.get(id=item_id, user=request.user)
+        item.delete()
+    except Cart.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Cart item not found or not yours.'})
+
+    # ✅ update totals for that user only
+    total_cart_items = Cart.objects.filter(user=request.user)
+    cart_sub_total = total_cart_items.aggregate(sub_total=Sum('sub_total'))['sub_total']
 
     return JsonResponse({
         'status': 'success',
@@ -206,11 +227,6 @@ def delete_cart_item(request):
         'total_cart_items': total_cart_items.count(),
         'cart_sub_total': "{:,.2f}".format(cart_sub_total) if cart_sub_total else "0.00",
     })
-
-
-
-
-
 
 
 def create_order(request):

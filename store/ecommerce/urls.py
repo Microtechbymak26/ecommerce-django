@@ -12,5 +12,6 @@ path('cart/', views.cart, name='cart'),
 path('delete-cart-item/', views.delete_cart_item, name='delete_cart_item'),
 path('create_order/', views.create_order, name='create_order'),
 # urls.py
-path('checkout/<int:order_id>/', views.checkout, name='checkout')
+path('checkout/<int:order_id>/', views.checkout, name='checkout'),
+ path("add-review/<int:product_id>/", views.add_review, name="add_review"),
 ]

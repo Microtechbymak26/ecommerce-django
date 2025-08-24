@@ -63,7 +63,8 @@
                             <input type="text" class="form-control text-center quantity-input" data-item-id="{{ item.id }}" value="{{ item.quantity }}" readonly>
                         </div>
                         <input type="hidden" class="max-stock" data-item-id="{{ item.id }}" value="{{ item.product.quantity }}">
-                        <strong class="me-3 item-subtotal" data-item-id="{{ item.id }}">${{ item.sub_total|floatformat:2 }}</strong>
+                       <strong>${{ item.product.prize|floatformat:2 }}</strong>
+
                         <button class="btn btn-outline-danger btn-sm delete_cart_item" data-item_id="{{ item.id }}" data-product_id="{{ item.product.id }}">🗑</button>
                     </div>
                 </div>
@@ -98,25 +99,51 @@
         </div>
         
         <!-- Right Column - Order Summary -->
-        <div class="col-lg-4">
-            <h4 class="mb-4">Order Summary</h4>
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Sub-total</span>
-                        <strong id="cart-sub-total">${{ cart_sub_total|floatformat:2|default:"0.00" }}</strong>
-                       
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Total</span>
-                        <strong class="fs-5" id="cart-total">${{ cart_sub_total|floatformat:2 }}</strong>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Proceed To Checkout →</button>
+      <div class="col-lg-4">
+    <h4 class="mb-4">Order Summary</h4>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
 
-                </div>
+            <!-- har product -->
+            {% for item in items %}
+            <div class="d-flex justify-content-between mb-2">
+                <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                <strong>${{ item.sub_total|floatformat:2 }}</strong>
             </div>
+            {% endfor %}
+
+            <hr>
+
+            <!-- subtotal -->
+            <div class="d-flex justify-content-between mb-2">
+                <span>Sub-total</span>
+                <strong>${{ cart_sub_total|floatformat:2 }}</strong>
+            </div>
+
+            <!-- shipping -->
+            <div class="d-flex justify-content-between mb-2">
+                <span>Shipping</span>
+                <strong>${{ cart_shipping_total|floatformat:2 }}</strong>
+            </div>
+
+            <hr>
+
+            <!-- grand total -->
+            <div class="d-flex justify-content-between mb-3">
+                <span>Total</span>
+                <strong class="fs-5">${{ cart_total|floatformat:2 }}</strong>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Proceed To Checkout →
+            </button>
         </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
     </div>
 </div>
 

@@ -225,16 +225,45 @@
             </ul>
         </div>
         <div class="tab-pane fade" id="reviews" role="tabpanel">
-            {% for review in product.reviews.all %}
-            <div class="border-bottom pb-2 mb-2">
-                <strong>{{ review.user.username }}</strong> - {{ review.rating }} Stars 
-                <small class="text-muted">({{ review.created_at|date:"M d, Y H:i" }})</small>
-                <p>{{ review.comment }}</p>
-            </div>
-            {% empty %}
-                <p>No reviews yet.</p>
-            {% endfor %}
+    <!-- Pehle existing reviews dikhayenge -->
+    {% for review in product.reviews.all %}
+        <div class="border-bottom pb-2 mb-2">
+            <strong>{{ review.user.username }}</strong> - {{ review.rating }}
+            <small class="text-muted">({{ review.created_at|date:"M d, Y H:i" }})</small>
+            <p>{{ review.comment }}</p>
         </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+
+    <hr>
+
+    <!-- Sirf logged-in user ko review form dikhayenge -->
+    {% if request.user.is_authenticated %}
+        <h5>Write a Review</h5>
+        <form method="POST" action="{% url 'add_review' product.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <select name="rating" class="form-select" required>
+                    <option value="⭐">⭐</option>
+                    <option value="⭐⭐">⭐⭐</option>
+                    <option value="⭐⭐⭐">⭐⭐⭐</option>
+                    <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+                    <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comment</label>
+                <textarea name="comment" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    {% else %}
+        <p class="text-muted">You must <a href="{%  url 'userauths:sign-in' %}?next={{ request.path }}">Sign In</a> to leave a review.</p>
+    {% endif %}
+</div>
+
     </div>
 
     <!-- Related Products -->
